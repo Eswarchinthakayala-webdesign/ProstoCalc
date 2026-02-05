@@ -6,7 +6,7 @@ struct TreatmentCostResponse: Codable {
 
 class CostEstimatorAPI {
     // Replace with your actual deployed Vercel URL
-    static let baseURL = "https://your-project-name.vercel.app" 
+    static let baseURL = "https://prosto-calc.vercel.app" 
     
     static func analyzeTreatmentCost(details: String, completion: @escaping (Result<String, Error>) -> Void) {
         guard let url = URL(string: "\(baseURL)/api/explain-cost") else {

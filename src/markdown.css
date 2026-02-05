@@ -1,0 +1,22 @@
+/* Base markdown styles to complement the editorStyles in the component */
+.wmde-markdown {
+  font-family: inherit;
+  background: transparent !important;
+}
+
+.wmde-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.wmde-markdown th, .wmde-markdown td {
+  padding: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.05);
+  text-align: left;
+}
+
+.wmde-markdown th {
+  background: rgba(255,255,255,0.02);
+  color: white;
+}

@@ -1,33 +1,36 @@
 import { useState } from 'react'
-
 import './App.css'
-import {createBrowserRouter,RouterProvider} from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import AppLayout from './layout/app-layout'
 import LandingPage from './pages/LandingPage'
+import DocsPage from './pages/DocsPage'
+import { ThemeProvider } from './components/theme-provider'
 
-
-
-const router=createBrowserRouter([
+const router = createBrowserRouter([
   {
-
-    element:<AppLayout/>,
-    children:[
+    element: <AppLayout />,
+    children: [
       {
-        path:"/",
-        element:<LandingPage/>
+        path: "/",
+        element: <LandingPage />
+      },
+      {
+        path: "/docs",
+        element: <DocsPage />,
+      },
+      {
+        path: "/docs/:trackId/:moduleId/:lessonId",
+        element: <DocsPage />,
       }
-      
     ]
-
   }
-
-
 ])
 
 function App() {
-  
   return (
-   <RouterProvider router={router}/>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <RouterProvider router={router} />
+    </ThemeProvider>
   )
 }
 
