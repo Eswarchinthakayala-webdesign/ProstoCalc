@@ -12,7 +12,7 @@ export default async function handler(request, response) {
   }
 
   try {
-    const apiKey = process.env.MISTRAL_API_KEY;
+    const apiKey = "ij8rdq5QHDdhzmU3hmUcwa5DLJVpAhbW";
 
     if (!apiKey) {
       return response.status(500).json({ error: 'Mistral API key not configured' });
