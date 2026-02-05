@@ -28,6 +28,7 @@ const LandingPage = () => {
                 <a href="#features" className="hover:text-white transition-colors">Features</a>
                 <a href="#showcase" className="hover:text-white transition-colors">App Showcase</a>
                 <a href="#integration" className="hover:text-white transition-colors">Integration</a>
+                <Link to="/demo" className="hover:text-white transition-colors">Demo</Link>
                 <Link to="/docs" className="hover:text-white transition-colors">Docs</Link>
             </nav>
 
@@ -72,6 +73,10 @@ const LandingPage = () => {
                                 <SheetLink href="#features">Features</SheetLink>
                                 <SheetLink href="#showcase">App Showcase</SheetLink>
                                 <SheetLink href="#integration">Integration</SheetLink>
+                                <Link to="/demo" className="flex items-center px-4 py-3 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                                    API Demo
+                                    <ArrowRight className="ml-auto h-4 w-4" />
+                                </Link>
                                 <Link to="/docs" className="flex items-center px-4 py-3 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition-all">
                                     Documentation
                                     <ArrowRight className="ml-auto h-4 w-4" />
@@ -101,7 +106,7 @@ const LandingPage = () => {
         </div>
       </header>
       {/* Hero Section */}
-      <section className="relative z-10 py-20 lg:py-32 overflow-hidden">
+      <section className="relative z-10 py-50 sm:py-32 overflow-hidden">
         {/* Gradient overlay - lighter to show particles */}
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
         <div className="container px-4 md:px-6 mx-auto">
