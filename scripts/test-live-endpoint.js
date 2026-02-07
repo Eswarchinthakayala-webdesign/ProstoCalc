@@ -1,28 +1,36 @@
 
-async function testLiveEndpoint() {
-  const url = 'https://prosto-calc.vercel.app/api/explain-cost';
-  console.log(`Testing URL: ${url}`);
-  
+import fs from 'fs';
+
+async function testLiveApiFixed() {
+  const url = 'https://prosto-calc.vercel.app/api/ai-chat';
+  const payload = {
+    messages: [
+      { 
+        role: "user", 
+        content: "Treatments: Dental Cleaning\nTotal Estimated Cost: $100 - $200\nClinic Type: Standard\nCountry: USA" 
+      }
+    ]
+  };
+
   try {
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userPrompt: "How much does a dental crown cost?" })
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     });
 
-    if (!response.ok) {
-      console.error(`Error: ${response.status} ${response.statusText}`);
-      const text = await response.text();
-      console.error('Response body:', text);
+    if (response.status === 404) {
+      fs.writeFileSync('live_api_check.json', JSON.stringify({ success: false, status: 404, message: "Endpoint NOT found (Not deployed yet?)" }, null, 2));
       return;
     }
 
     const data = await response.json();
-    console.log("Success! API Response:");
-    console.log(data);
-  } catch (err) {
-    console.error("Network error:", err);
+    fs.writeFileSync('live_api_check.json', JSON.stringify({ success: response.ok, status: response.status, data }, null, 2));
+  } catch (error) {
+    fs.writeFileSync('live_api_check.json', JSON.stringify({ success: false, error: error.message }, null, 2));
   }
 }
 
-testLiveEndpoint();
+testLiveApiFixed();

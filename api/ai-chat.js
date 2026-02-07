@@ -1,5 +1,4 @@
-
-import { init } from "@heyputer/puter.js/src/init.cjs";
+import puter from "@heyputer/puter.js";
 
 export default async function handler(request, response) {
   // Handle CORS preflight request
@@ -19,7 +18,7 @@ export default async function handler(request, response) {
     }
 
     // Initialize Puter with the auth token
-    const puter = init(token);
+    puter.setAuthToken(token);
 
     const { messages } = request.body;
 
