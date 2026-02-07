@@ -16,8 +16,15 @@ import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import MagneticBackground from '../components/MagneticBackground';
 
-const API_RESPONSE = {
-  result: `Dental crowns are a common restorative treatment used to repair damaged, decayed, or weakened teeth. The cost of a dental crown can vary significantly based on several factors, including the type of material used, geographic location, the dentist's experience, and insurance coverage. Below is a detailed breakdown of potential costs, insurance considerations, and out-of-pocket expenses.
+const API_RESPONSES = {
+  mistral: {
+    title: 'Treatment Cost Analysis',
+    endpoint: 'https://prosto-calc.vercelapp/api/explain-cost',
+    payload: {
+      userPrompt: "Explain dental crown costs",
+      locale: "en-US"
+    },
+    result: `Dental crowns are a common restorative treatment used to repair damaged, decayed, or weakened teeth. The cost of a dental crown can vary significantly based on several factors, including the type of material used, geographic location, the dentist's experience, and insurance coverage. Below is a detailed breakdown of potential costs, insurance considerations, and out-of-pocket expenses.
 
 ---
 
@@ -90,82 +97,54 @@ Most plans categorize crowns as a **"Major Work"** service, often covered at **5
 - **Out-of-Network Dentist**: Higher costs (e.g., $1,000+ after insurance, if covered at all).
 
 ---
-### **4. Financing and Payment Options**
-Many dental offices offer:
-- **Payment Plans**: $50–$150/month (e.g., CareCredit, LendingClub).
-- **Discounts**: Some offices offer **10–20% off** for full payment upfront.
-- **Flexible Spending Accounts (FSA)/Health Savings Accounts (HSA)**: Pre-tax dollars can cover costs.
+### **4. Summary**
+Crowns are a significant investment. For the most accurate quote, **contact your dentist's office directly** and confirm coverage with your insurance provider.`
+  },
+  puter: {
+    title: 'Precision Cost Estimator (Puter)',
+    endpoint: 'https://prosto-calc.vercelapp/api/ai-chat',
+    payloadTemplate: (input) => ({
+      messages: [{ role: "user", content: input || "Treatments: Root Canal, Zirconia Crown\nTotal Estimated Cost: $1,500 - $2,500\nClinic Type: Premium\nCountry: USA" }]
+    }),
+    result: `### **Dental Treatment Cost Estimate**
+  
+*This is a preliminary estimate based on average industry rates.*
 
 ---
-### **5. Ways to Reduce Costs**
-1. **Choose a Less Expensive Material**: PFM crowns are often a balance of cost and aesthetics.
-2. **Ask About Dental Schools**: Some dental schools offer **discounted crowns** (supervised by professors).
-3. **Negotiate**: Some dentists reduce fees for long-term patients or bulk treatments.
-4. **Check for Promotions**: Offices sometimes run **crown specials** (e.g., $500 for a PFM crown).
-5. **Preventative Care**: Avoid crowns by maintaining good oral hygiene (insurance may cover preventive care at 100%).
+
+### **1. Core Procedure: Root Canal & Crown**
+| Service | Estimated Cost (USD) |
+|---------|-----------------------|
+| Root Canal (Molar) | $1,000 - $1,600 |
+| Core Buildup | $200 - $400 |
+| Zirconia Crown | $1,200 - $2,500 |
+
+### **2. Potential Additional Costs**
+- **Consultation/Exam**: $50 - $150
+- **Digital X-Rays**: $25 - $100
+- **Local Anesthesia**: Included in most clinics
 
 ---
-### **6. Example Cost Scenarios**
-#### **Scenario 1: Metal Crown (Back Tooth)**
-- **Cost**: $600 (dentist fee) + $100 (lab) = **$700 total**
-- **Insurance**: Covers 60% of $700 = $420
-- **Your Cost**: $700 – $420 – $100 (deductible) = **$180**
 
-#### **Scenario 2: All-Ceramic Crown (Front Tooth)**
-- **Cost**: $2,000 (dentist fee) + $200 (lab) = **$2,200 total**
-- **Insurance**: Covers 50% of $2,200 = $1,100 (but annual max is $1,500)
-- **Your Cost**: $2,200 – $1,500 (max coverage) – $100 (deductible) = **$600**
+**Estimated Total (Out-of-Pocket): $2,475 - $4,600**
 
-#### **Scenario 3: No Insurance**
-- **Cost**: $2,500 (E-Max crown)
-- **Payment Plan**: $200/month for 12 months = **$2,400 total**
-
----
-### **7. What Affects the Final Cost?**
-- **Location**: Urban areas (e.g., NYC, LA) cost **20–50% more** than rural areas.
-- **Dentist's Experience**: Specialists (e.g., prosthodontists) may charge **30–100% more** than general dentists.
-- **Emergency vs. Elective**: Emergency crowns (e.g., after trauma) may have **higher fees**.
-- **Additional Procedures**: If you need a root canal or gum treatment, costs add up.
-
----
-### **8. Questions to Ask Your Dentist**
-1. **"What type of crown do you recommend, and why?"**
-2. **"Is there a less expensive alternative that's still durable?"**
-3. **"What's the total cost upfront, including prep and follow-up?"**
-4. **"Do you accept my insurance, and what's my expected out-of-pocket?"**
-5. **"Are there payment plans or financing options?"**
-6. **"Do you offer discounts for cash payments?"**
-
----
-### **9. Empathetic Note**
-Crowns can be a significant investment, and the cost can feel overwhelming. If you're concerned about affordability:
-- **Explore financing** to spread out payments.
-- **Check with your dentist** about payment assistance programs.
-- **Prioritize oral health**—delaying treatment can lead to more expensive issues (e.g., infections, extractions).
-
----
-### **Disclaimer**
-These are **estimates** based on average U.S. dental fees (2024). Actual costs vary by:
-- Geographic location,
-- Dentist's fee schedule,
-- Insurance plan specifics,
-- Additional procedures required,
-- Material choices, and
-- Office policies.
-
-For the most accurate quote, **contact your dentist's office directly** and confirm coverage with your insurance provider.`
+*Disclaimer: Actual costs vary based on geographic location and clinic tier. Please consult your local dentist for a final quote.*`
+  }
 };
+
 
 const DemoPage = () => {
   const [status, setStatus] = useState('idle'); // idle, loading, success
   const [progress, setProgress] = useState(0);
+  const [activeApi, setActiveApi] = useState('mistral');
+  const [userInput, setUserInput] = useState('');
 
   const handleRun = () => {
     setStatus('loading');
     setProgress(0);
     
-    const duration = 5000;
-    const interval = 50; 
+    const duration = 3000;
+    const interval = 30; 
     const step = (interval / duration) * 100;
     
     const timer = setInterval(() => {
@@ -180,7 +159,7 @@ const DemoPage = () => {
 
     setTimeout(() => {
       setStatus('success');
-      toast.success('Analysis Complete');
+      toast.success(`${API_RESPONSES[activeApi].title} Complete`);
     }, duration);
   };
 
@@ -225,6 +204,54 @@ const DemoPage = () => {
           </motion.p>
         </header>
 
+        {/* API Switcher */}
+        <div className="flex justify-center">
+          <div className="p-1 rounded-xl bg-zinc-900/50 border border-white/5 backdrop-blur-md flex gap-1">
+            {[
+              { id: 'mistral', name: 'Analysis Engine', icon: <Sparkles size={14} /> },
+              { id: 'puter', name: 'Interactive Estimator', icon: <Terminal size={14} /> }
+            ].map((api) => (
+              <button
+                key={api.id}
+                onClick={() => {
+                  setActiveApi(api.id);
+                  setStatus('idle');
+                }}
+                className={`
+                  px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-2
+                  ${activeApi === api.id 
+                    ? 'bg-white text-black shadow-lg' 
+                    : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/5'
+                  }
+                `}
+              >
+                {api.icon}
+                {api.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* User Input for Puter */}
+        {activeApi === 'puter' && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-2xl mx-auto space-y-4"
+          >
+            <div className="relative group">
+              <input
+                type="text"
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                placeholder="Ex: How much does a zirconia crown cost with root canal?"
+                className="w-full bg-zinc-900/50 border border-white/10 rounded-2xl px-6 py-4 text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50 transition-all backdrop-blur-xl"
+              />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/10 to-transparent -z-10 group-focus-within:opacity-100 opacity-0 transition-opacity" />
+            </div>
+          </motion.div>
+        )}
+
         {/* Info Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-6 rounded-2xl bg-zinc-900/30 border border-white/5 backdrop-blur-xl space-y-4 shadow-xl">
@@ -233,7 +260,7 @@ const DemoPage = () => {
               <span>API Endpoint</span>
             </div>
             <code className="block p-3 rounded-xl bg-black/40 border border-white/5 text-sm text-purple-300 font-mono break-all font-medium">
-              https://prosto-calc.vercelapp/api/explain-cost
+              {API_RESPONSES[activeApi].endpoint}
             </code>
           </div>
 
@@ -242,8 +269,11 @@ const DemoPage = () => {
               <Code2 size={14} />
               <span>Query Cargo</span>
             </div>
-            <pre className="p-3 rounded-xl bg-black/40 border border-white/5 text-xs font-mono text-zinc-400">
-              {codeSnippet}
+            <pre className="p-3 rounded-xl bg-black/40 border border-white/5 text-xs font-mono text-zinc-400 overflow-x-auto">
+              {activeApi === 'mistral' 
+                ? JSON.stringify(API_RESPONSES.mistral.payload, null, 2)
+                : JSON.stringify(API_RESPONSES.puter.payloadTemplate(userInput), null, 2)
+              }
             </pre>
           </div>
         </div>
@@ -294,7 +324,9 @@ const DemoPage = () => {
                     <div className="px-5 py-3 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
                         <div className="flex items-center gap-2">
                            <Terminal size={14} className="text-zinc-500" />
-                           <span className="text-xs font-bold text-zinc-500">response_data.md</span>
+                           <span className="text-xs font-bold text-zinc-500">
+                             {activeApi === 'mistral' ? 'cost_analysis_report.md' : 'ai_chat_response.md'}
+                           </span>
                         </div>
                         <div className="flex items-center gap-2 text-emerald-500">
                             <CheckCircle2 size={14} />
@@ -303,7 +335,7 @@ const DemoPage = () => {
                     </div>
                     <div className="p-6 md:p-10 overflow-y-auto max-h-[600px] custom-scrollbar prose prose-invert max-w-none" data-color-mode="dark">
                         <MDEditor.Markdown 
-                            source={API_RESPONSE.result} 
+                            source={API_RESPONSES[activeApi].result} 
                             style={{ 
                                 background: 'transparent', 
                                 color: '#d4d4d8',
